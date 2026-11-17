@@ -1,0 +1,7 @@
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}

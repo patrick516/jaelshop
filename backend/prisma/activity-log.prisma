@@ -1,0 +1,16 @@
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String? // staff who did it
+  action    String // "CREATE", "UPDATE", "DELETE", "LOGIN"
+  entity    String // "Product", "Order", ...
+  entityId  String?
+  details   Json? // extra info, e.g. changed fields
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}

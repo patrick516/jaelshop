@@ -1,0 +1,18 @@
+model Payment {
+  id             String        @id @default(uuid())
+  orderId        String
+  method         PaymentMethod
+  status         PaymentStatus @default(PENDING)
+  amount         Decimal       @db.Decimal(12, 2)
+  phoneNumber    String? // mobile money number used
+  transactionRef String? // reference from Airtel / TNM / bank
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("payments")
+}

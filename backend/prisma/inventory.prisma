@@ -1,0 +1,28 @@
+model Inventory {
+  id                String   @id @default(uuid())
+  variantId         String   @unique // one inventory row per variant
+  quantity          Int      @default(0)
+  lowStockThreshold Int      @default(5) // warn when quantity falls to this
+  updatedAt         DateTime @updatedAt
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@map("inventory")
+}
+
+// History of every stock change (who, why, how many)
+model StockMovement {
+  id        String            @id @default(uuid())
+  variantId String
+  type      StockMovementType
+  quantity  Int // positive adds stock, negative removes it
+  note      String?
+  userId    String? // staff who made the change
+  createdAt DateTime          @default(now())
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  user    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([variantId])
+  @@map("stock_movements")
+}

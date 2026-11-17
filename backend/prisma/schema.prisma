@@ -1,0 +1,9 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Tells Prisma which database to use and where the URL comes from
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

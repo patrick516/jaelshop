@@ -1,0 +1,18 @@
+model Address {
+  id          String   @id @default(uuid())
+  customerId  String
+  label       String?
+  fullName    String
+  phone       String
+  district    String
+  area        String
+  addressLine String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("addresses")
+}

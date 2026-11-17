@@ -1,0 +1,59 @@
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+// Product visibility in the shop
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+// Order lifecycle (matches the Delivered / Processing / Pending badges)
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+// Where the order came from
+enum OrderSource {
+  WEBSITE
+  WHATSAPP
+  ADMIN
+}
+
+// Payment methods shown in the designs
+enum PaymentMethod {
+  AIRTEL_MONEY
+  TNM_MPAMBA
+  CASH_ON_DELIVERY
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// Coupon type: percent off or fixed MWK off
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+// Why stock changed
+enum StockMovementType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  RETURN
+}
