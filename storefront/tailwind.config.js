@@ -50,24 +50,12 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        // TranpTech brand green (from logo) — same token used in the admin panel
-        brand: {
-          50: "#ecfdf5",
-          100: "#d1fae5",
-          200: "#a7f3d0",
-          300: "#6ee7b7",
-          400: "#34d399",
-          500: "#10b981",
-          600: "#059669",
-          700: "#047857",
-          800: "#065f46",
-          900: "#064e3b",
-        },
-        // Dark navy for hero/dark sections, matching the flyer background
+        // JAEL Enterprise navy. The orange is Tailwind's built-in orange-500 (#F97316)
         navy: {
-          900: "#0b1220",
-          800: "#111827",
-          700: "#1f2937",
+          DEFAULT: "#0A2540", // bg-navy, text-navy
+          900: "#0A2540",
+          800: "#0F3158",
+          700: "#173F6E",
         },
       },
     },
