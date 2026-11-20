@@ -1,15 +1,14 @@
 "use client"; // uses the cart and a click handler
 
 import Link from "next/link";
-import { useState } from "react";
-import { ImageOff, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/types";
 import { useCart } from "@/store/cart";
 import { formatMK } from "@/lib/format";
+import CardImage from "./CardImage";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
-  const [imageFailed, setImageFailed] = useState(false); // true when the picture link is broken
 
   const variants = product.variants.filter((v) => v.isActive);
   // A product with exactly one version can be added straight away. Others need a size/colour choice
@@ -33,15 +32,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border bg-white">
-      {/* Picture. Clicking it opens the product page */}
-      <Link href={`/product/${product.slug}`} className="flex aspect-square items-center justify-center bg-secondary p-2">
-        {image && !imageFailed ? (
-          // a plain <img> works with any web address, so no image settings are needed yet
-          <img src={image.url} alt={image.altText ?? product.name} onError={() => setImageFailed(true)} className="h-full w-full object-contain" />
-        ) : (
-          <ImageOff className="text-muted-foreground" size={32} />
-        )}
-      </Link>
+      <CardImage product={product} />
 
       <div className="flex flex-1 flex-col gap-1 p-3">
         <Link href={`/product/${product.slug}`} className="line-clamp-2 text-sm font-semibold text-navy">

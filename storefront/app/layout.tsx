@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/store/cart";
@@ -6,6 +6,8 @@ import { AuthProvider } from "@/store/auth";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
+import InstallPrompt from "@/components/layout/InstallPrompt";
+import RegisterSW from "@/components/layout/RegisterSW";
 import { getSettings } from "@/services/catalog";
 
 // The font. variable makes it available to Tailwind as --font-inter (see tailwind.config.js)
@@ -15,7 +17,13 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "JAEL Enterprise",
   description: "Stationery, office equipment, electronics and clothing",
+  applicationName: "JAEL Enterprise",
+  appleWebApp: { capable: true, title: "JAEL", statusBarStyle: "default" },
+  icons: { icon: "/icons/192", apple: "/icons/180" },
 };
+
+// The colour of the phone's top bar and of the installed app window
+export const viewport: Viewport = { themeColor: "#0A2540" };
 
 // async so it can ask the backend for the owner's WhatsApp number once, for every page
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -34,6 +42,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </CartProvider>
         </AuthProvider>
         <Toaster richColors position="top-center" />
+        <RegisterSW />
+        <InstallPrompt />
       </body>
     </html>
   );

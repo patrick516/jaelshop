@@ -55,15 +55,26 @@ export type Product = {
 export type Settings = {
   storeName: string;
   whatsappNumber: string;
-  deliveryFee: string;
   airtelMoneyNumber: string;
   tnmMpambaNumber: string;
 };
 
 // The logged-in customer, as returned by /auth/login and /auth/register
-export type Customer = { id: string; firstName: string; lastName: string; email: string };
+export type Customer = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
 
-export type OrderItem = { id: string; productName: string; variantLabel: string | null; unitPrice: string; quantity: number; lineTotal: string };
+export type OrderItem = {
+  id: string;
+  productName: string;
+  variantLabel: string | null;
+  unitPrice: string;
+  quantity: number;
+  lineTotal: string;
+};
 
 // What the backend returns after placing an order
 export type Order = {
@@ -86,7 +97,14 @@ export type Order = {
 };
 
 // The customer profile from GET /customers/me
-export type Profile = { id: string; firstName: string; lastName: string; email: string; phone: string | null; createdAt: string };
+export type Profile = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  createdAt: string;
+};
 
 // A saved delivery address
 export type Address = {
@@ -103,5 +121,12 @@ export type Address = {
 // One wishlist entry, with a small copy of the product
 export type WishlistEntry = {
   id: string;
-  product: { id: string; name: string; slug: string; price: string; status: string; images: { url: string; altText: string | null }[] };
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    price: string;
+    status: string;
+    images: { url: string; altText: string | null }[];
+  };
 };

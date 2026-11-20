@@ -11,7 +11,13 @@ import ProductActions from "./ProductActions";
 import ProductReviews from "./ProductReviews";
 
 // Only puts the pieces together. Each piece lives in its own file
-export default function ProductDetail({ product, settings }: { product: Product; settings: Settings }) {
+export default function ProductDetail({
+  product,
+  settings,
+}: {
+  product: Product;
+  settings: Settings;
+}) {
   const sel = useVariantSelection(product);
   const { selected, stock } = sel;
 
@@ -21,25 +27,51 @@ export default function ProductDetail({ product, settings }: { product: Product;
 
       <div className="space-y-5">
         <ProductHeader product={product} price={sel.price} />
-        <OptionChips title="Size" options={sel.sizes} value={sel.size} onPick={sel.pickSize} inStock={sel.sizeInStock} />
-        <OptionChips title="Colour" options={sel.colors} value={sel.color} onPick={sel.pickColor} inStock={sel.colorInStock} />
+        <OptionChips
+          title="Size"
+          options={sel.sizes}
+          value={sel.size}
+          onPick={sel.pickSize}
+          inStock={sel.sizeInStock}
+        />
+        <OptionChips
+          title="Colour"
+          options={sel.colors}
+          value={sel.color}
+          onPick={sel.pickColor}
+          inStock={sel.colorInStock}
+        />
 
-        <p className={`text-sm font-semibold ${stock > 0 ? "text-green-600" : "text-destructive"}`}>
-          {!selected ? "This combination is not available" : stock === 0 ? "Out of stock" : stock <= 5 ? `Only ${stock} left` : "In stock"}
+        <p
+          className={`text-sm font-semibold ${stock > 0 ? "text-green-600" : "text-destructive"}`}
+        >
+          {!selected
+            ? "This combination is not available"
+            : stock === 0
+              ? "Out of stock"
+              : stock <= 5
+                ? `Only ${stock} left`
+                : "In stock"}
         </p>
 
         <div className="flex items-center gap-4">
           <p className="text-sm font-bold text-navy">Quantity</p>
-          <QuantityStepper value={sel.qty} max={Math.max(stock, 1)} onChange={sel.setQty} />
+          <QuantityStepper
+            value={sel.qty}
+            max={Math.max(stock, 1)}
+            onChange={sel.setQty}
+          />
         </div>
 
         <ProductActions product={product} settings={settings} sel={sel} />
-        <DeliveryInfo settings={settings} />
+        <DeliveryInfo />
 
         {product.description && (
           <div>
             <h2 className="mb-1 font-extrabold text-navy">Description</h2>
-            <p className="whitespace-pre-line text-sm text-muted-foreground">{product.description}</p>
+            <p className="whitespace-pre-line text-sm text-muted-foreground">
+              {product.description}
+            </p>
           </div>
         )}
         <ProductReviews reviews={product.reviews ?? []} />
