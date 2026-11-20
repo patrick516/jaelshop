@@ -8,7 +8,9 @@ import type { Product } from "./types";
 
 // The pictures of a saved product. Every change is saved straight away
 export default function ProductImages({ productId }: { productId: string }) {
-  const { data, error, loading, reload } = useFetch<Product>(`/products/${productId}`);
+  const { data, error, loading, reload } = useFetch<Product>(
+    `/products/${productId}`,
+  );
   if (!data) return <QueryState loading={loading} error={error} />;
 
   const base = `/products/${productId}/images`;
@@ -20,13 +22,30 @@ export default function ProductImages({ productId }: { productId: string }) {
       toast.error(e instanceof Error ? e.message : "Something went wrong");
     }
   };
-  const pictures = data.images.map((i) => ({ key: i.id, url: i.url, isMain: i.isPrimary }));
+  const pictures = data.images.map((i) => ({
+    key: i.id,
+    url: i.url,
+    isMain: i.isPrimary,
+  }));
 
   return (
     <div className="space-y-3">
-      <PictureGrid pictures={pictures} onRemove={(id) => act(() => api.delete(`${base}/${id}`))} onMakeMain={(id) => act(() => api.patch(`${base}/${id}/primary`))} />
-      <PictureUploadButton onUploaded={(url) => act(() => api.post(base, { url }))} label="Add picture" />
-      <p className="text-xs text-muted-foreground">Picture changes are saved straight away.</p>
+      <PictureGrid
+        pictures={pictures}
+        onRemove={(id) => act(() => api.delete(`${base}/${id}`))}
+        onMakeMain={(id) => act(() => api.patch(`${base}/${id}/primary`))}
+      />
+      <PictureUploadButton
+        onUploaded={(added) =>
+          act(async () => {
+            for (const url of added) await api.post(base, { url }); // one after the other, so the first picture of a new product becomes its main one
+          })
+        }
+        label="Add pictures"
+      />
+      <p className="text-xs text-muted-foreground">
+        Picture changes are saved straight away.
+      </p>
     </div>
   );
 }

@@ -5,3 +5,7 @@ export type StockData = { units: number; costValue: number; retailValue: number;
 
 // Every report that depends on dates gets these
 export type RangeProps = { from: string; to: string };
+
+// Money figures of a group of sold items. Profit counts only items that had a cost price
+export type Figures = { quantity: number; revenue: number; cost: number; profit: number; margin: number | null; uncostedRevenue: number };
+export type ProfitData = { totals: Figures; discounts: number; byPeriod: (Figures & { period: string })[]; byProduct: (Figures & { name: string })[] };

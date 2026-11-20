@@ -24,10 +24,12 @@ export default function OrderItemsList({ order }: { order: OrderDetail }) {
           <span>-{formatMK(order.discountTotal)}</span>
         </div>
       )}
-      <div className="flex justify-between">
-        <span>Delivery fee</span>
-        <span>{formatMK(order.deliveryFee)}</span>
-      </div>
+      {Number(order.deliveryFee) > 0 && (
+        <div className="flex justify-between">
+          <span>Delivery fee</span>
+          <span>{formatMK(order.deliveryFee)}</span>
+        </div>
+      )}
       <div className="flex justify-between text-base font-extrabold text-navy">
         <span>Total</span>
         <span className="text-orange-500">{formatMK(order.total)}</span>

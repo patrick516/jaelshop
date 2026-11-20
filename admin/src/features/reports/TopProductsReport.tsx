@@ -2,6 +2,8 @@ import QueryState from "@/components/shared/QueryState";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useFetch } from "@/hooks/useFetch";
 import { formatMK } from "@/lib/format";
+import ExportMenu from "./ExportMenu";
+import { topProductsDoc } from "./docs";
 import type { RangeProps, TopProductsData } from "./types";
 
 // The best sellers by units sold
@@ -10,35 +12,40 @@ export default function TopProductsReport({ from, to }: RangeProps) {
   if (!data) return <QueryState loading={loading} error={error} />;
 
   return (
-    <div className="overflow-x-auto rounded-xl border bg-white">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12">#</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead>Units sold</TableHead>
-            <TableHead className="text-right">Revenue</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.rows.length === 0 ? (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <ExportMenu doc={topProductsDoc(data, from, to)} />
+      </div>
+      <div className="overflow-x-auto rounded-xl border bg-white">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
-                No sales in this period
-              </TableCell>
+              <TableHead className="w-12">#</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Units sold</TableHead>
+              <TableHead className="text-right">Revenue</TableHead>
             </TableRow>
-          ) : (
-            data.rows.map((r, i) => (
-              <TableRow key={r.name}>
-                <TableCell className="text-muted-foreground">{i + 1}</TableCell>
-                <TableCell className="font-semibold text-navy">{r.name}</TableCell>
-                <TableCell>{r.quantity}</TableCell>
-                <TableCell className="text-right font-semibold">{formatMK(r.revenue)}</TableCell>
+          </TableHeader>
+          <TableBody>
+            {data.rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                  No sales in this period
+                </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              data.rows.map((r, i) => (
+                <TableRow key={r.name}>
+                  <TableCell className="text-muted-foreground">{i + 1}</TableCell>
+                  <TableCell className="font-semibold text-navy">{r.name}</TableCell>
+                  <TableCell>{r.quantity}</TableCell>
+                  <TableCell className="text-right font-semibold">{formatMK(r.revenue)}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

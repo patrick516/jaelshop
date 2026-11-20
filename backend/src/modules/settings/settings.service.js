@@ -4,8 +4,7 @@ const { normalizePhone } = require("../../utils/whatsapp");
 // Used when a setting has not been saved yet, so the app always has a value
 const DEFAULTS = {
   storeName: "JAEL Enterprise",
-  whatsappNumber: "", // the owner's number, set from the admin Settings page
-  deliveryFee: "2000", // MWK, flat fee
+  whatsappNumber: "",
   airtelMoneyNumber: "",
   tnmMpambaNumber: "",
 };

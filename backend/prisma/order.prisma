@@ -37,9 +37,10 @@ model OrderItem {
   id           String  @id @default(uuid())
   orderId      String
   variantId    String
-  productName  String // copied so old orders never change
-  variantLabel String? // e.g. "A4 / Blue"
+  productName  String 
+  variantLabel String?
   unitPrice    Decimal @db.Decimal(12, 2)
+  unitCost     Decimal? @db.Decimal(12, 2)
   quantity     Int
   lineTotal    Decimal @db.Decimal(12, 2)
 

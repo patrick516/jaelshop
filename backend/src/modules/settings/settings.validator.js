@@ -14,10 +14,6 @@ const updateRules = [
     .withMessage(
       "Enter a valid phone number, e.g. 0999123456 or +265999123456",
     ),
-  body("deliveryFee")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Delivery fee must be a number"),
   body("airtelMoneyNumber").optional().trim(),
   body("tnmMpambaNumber").optional().trim(),
   handleValidation,

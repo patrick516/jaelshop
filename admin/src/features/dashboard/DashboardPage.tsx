@@ -5,6 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/shared/PageHeader";
 import { useAuth } from "@/features/auth/useAuth";
 import { useFetch } from "@/hooks/useFetch";
+import { daysAgo, today } from "@/lib/dates";
+import type { ProfitData } from "@/features/reports/types";
 import KpiCards from "./KpiCards";
 import QuickActions from "./QuickActions";
 import RangeTabs from "./RangeTabs";
@@ -18,23 +20,38 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const [days, setDays] = useState(30);
   const { data, error } = useFetch<DashboardData>(`/dashboard?days=${days}`);
+  const profit = useFetch<ProfitData>(
+    `/reports/profit?from=${daysAgo(days)}&to=${today()}`,
+  );
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard" subtitle={`Welcome back, ${user?.firstName}! Here's what's happening with your store.`}>
+      <PageHeader
+        title="Dashboard"
+        subtitle={`Welcome back, ${user?.firstName}! Here's what's happening with your store.`}
+      >
         <RangeTabs days={days} onChange={setDays} />
       </PageHeader>
 
-      {error && <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-destructive">{error}</p>}
+      {error && (
+        <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-destructive">
+          {error}
+        </p>
+      )}
       {!data && !error && <Skeleton className="h-96 w-full" />}
       {data && (
         <>
           {data.lowStockCount > 0 && (
-            <Link to="/inventory?lowStock=true" className="flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-800">
-              <AlertTriangle size={18} /> {data.lowStockCount} {data.lowStockCount === 1 ? "item is" : "items are"} low on stock. Tap to see them.
+            <Link
+              to="/inventory?lowStock=true"
+              className="flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-800"
+            >
+              <AlertTriangle size={18} /> {data.lowStockCount}{" "}
+              {data.lowStockCount === 1 ? "item is" : "items are"} low on stock.
+              Tap to see them.
             </Link>
           )}
-          <KpiCards data={data} />
+          <KpiCards data={data} profit={profit.data?.totals ?? null} />
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <SalesChart points={data.salesOverview} monthly={days > 90} />

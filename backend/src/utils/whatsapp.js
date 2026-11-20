@@ -39,8 +39,10 @@ const orderMessage = (order, storeName) => {
     ...lines,
     "",
     `Subtotal: ${mk(order.subtotal)}`,
-    `Delivery: ${mk(order.deliveryFee)}`,
-    ...(Number(order.discountTotal) > 0 ? [`Discount: -${mk(order.discountTotal)}`] : []),
+    "Delivery: to be agreed in this chat",
+    ...(Number(order.discountTotal) > 0
+      ? [`Discount: -${mk(order.discountTotal)}`]
+      : []),
     `*Total: ${mk(order.total)}*`,
     "",
     `Name: ${order.shippingName}`,

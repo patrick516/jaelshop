@@ -70,4 +70,4 @@ const stock = async () => {
   return row;
 };
 
-module.exports = { sales, topProducts, payments, stock };
+module.exports = { sales, topProducts, payments, stock, range };

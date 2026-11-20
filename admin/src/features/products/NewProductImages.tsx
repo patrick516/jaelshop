@@ -9,9 +9,18 @@ export default function NewProductImages({ urls, onChange }: Props) {
 
   return (
     <div className="space-y-3">
-      <PictureGrid pictures={pictures} onRemove={(key) => onChange(urls.filter((u) => u !== key))} onMakeMain={(key) => onChange([key, ...urls.filter((u) => u !== key)])} />
-      <PictureUploadButton onUploaded={(url) => onChange([...urls, url])} label={urls.length ? "Add another picture" : "Upload picture"} />
-      <p className="text-xs text-muted-foreground">The first picture is the main one shoppers see first.</p>
+      <PictureGrid
+        pictures={pictures}
+        onRemove={(key) => onChange(urls.filter((u) => u !== key))}
+        onMakeMain={(key) => onChange([key, ...urls.filter((u) => u !== key)])}
+      />
+      <PictureUploadButton
+        onUploaded={(added) => onChange([...urls, ...added])}
+        label={urls.length ? "Add more pictures" : "Upload pictures"}
+      />
+      <p className="text-xs text-muted-foreground">
+        The first picture is the main one shoppers see first.
+      </p>
     </div>
   );
 }

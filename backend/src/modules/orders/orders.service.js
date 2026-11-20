@@ -26,8 +26,7 @@ const makeOrderNumber = () => {
 
 const createOrder = async (body, user) => {
   const isStaff = user.type === "staff";
-  const settings = await settingsService.getAll(); // owner number, store name, delivery fee
-  const deliveryFee = Number(settings.deliveryFee) || 0;
+  const settings = await settingsService.getAll();
 
   const order = await prisma.$transaction(async (tx) => {
     // 1. Load every variant the customer asked for, with its product
@@ -53,6 +52,8 @@ const createOrder = async (body, user) => {
         unitPrice,
         quantity: item.quantity,
         lineTotal: unitPrice * item.quantity,
+        unitCost:
+          v.product.costPrice === null ? null : Number(v.product.costPrice),
       };
     });
     const subtotal = lines.reduce((sum, l) => sum + l.lineTotal, 0);
@@ -64,7 +65,7 @@ const createOrder = async (body, user) => {
       ({ coupon, discount } = await findUsable(tx, body.couponCode, subtotal));
       await redeem(tx, coupon);
     }
-    const total = subtotal - discount + deliveryFee;
+    const total = subtotal - discount;
 
     // 3. Reduce stock. The "gte" check means two buyers can never take the last item
     for (const line of lines) {
@@ -92,7 +93,6 @@ const createOrder = async (body, user) => {
         customerId: isStaff ? body.customerId || null : user.id, // customers can only order for themselves
         source: isStaff ? body.source || "ADMIN" : user.source || "WEBSITE", // guests carry source WHATSAPP
         subtotal,
-        deliveryFee,
         total,
         discountTotal: discount,
         couponId: coupon?.id ?? null,
@@ -111,7 +111,7 @@ const createOrder = async (body, user) => {
           },
         },
       },
-      include: { items: true, payments: true },
+      include: { items: { omit: { unitCost: true } }, payments: true },
     });
   });
 
@@ -158,7 +158,7 @@ const listMine = (user) => {
   if (user.type !== "customer") throw new ApiError(403, "Customers only");
   return prisma.order.findMany({
     where: { customerId: user.id },
-    include: { items: true, payments: true },
+    include: { items: { omit: { unitCost: true } }, payments: true },
     orderBy: { createdAt: "desc" },
   });
 };
@@ -168,7 +168,7 @@ const getById = async (id, user) => {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      items: true,
+      items: { omit: { unitCost: true } },
       payments: true,
       customer: {
         select: {
