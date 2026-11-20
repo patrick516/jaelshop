@@ -56,7 +56,7 @@ const summary = async (query) => {
     prisma.$queryRaw`
         SELECT date_trunc(${unit}, "createdAt") AS day, COUNT(*)::int AS orders, COALESCE(SUM(total), 0)::float AS sales
         FROM orders
-        WHERE "createdAt" >= ${from} AND status NOT IN ('CANCELLED', 'REFUNDED')
+               WHERE "createdAt" >= ${from.toISOString()}::timestamp AND status NOT IN ('CANCELLED', 'REFUNDED')
         GROUP BY 1 ORDER BY 1`,
     // Sales per category: order lines -> variant -> product -> category
     prisma.$queryRaw`
@@ -66,7 +66,7 @@ const summary = async (query) => {
         JOIN product_variants v ON v.id = oi."variantId"
         JOIN products p ON p.id = v."productId"
         JOIN categories c ON c.id = p."categoryId"
-        WHERE o."createdAt" >= ${from} AND o.status NOT IN ('CANCELLED', 'REFUNDED')
+             WHERE o."createdAt" >= ${from.toISOString()}::timestamp AND o.status NOT IN ('CANCELLED', 'REFUNDED')
         GROUP BY c.name ORDER BY sales DESC LIMIT 5`,
     prisma.order.findMany({
       take: 5,

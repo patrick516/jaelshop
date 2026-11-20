@@ -22,6 +22,7 @@ const createRules = [
     .isIn(["AIRTEL_MONEY", "TNM_MPAMBA", "CASH_ON_DELIVERY", "BANK_TRANSFER"])
     .withMessage("Invalid payment method"),
   body("paymentPhone").optional({ nullable: true }).trim(),
+  body("couponCode").optional({ values: "falsy" }).trim(),
   body("customerId")
     .optional({ nullable: true })
     .isUUID()
@@ -49,4 +50,13 @@ const statusRules = [
   handleValidation,
 ];
 
-module.exports = { createRules, statusRules };
+// Staff links an order to a customer, or sends null to remove the link
+const customerRules = [
+  body("customerId")
+    .optional({ nullable: true })
+    .isUUID()
+    .withMessage("Invalid customer id"),
+  handleValidation,
+];
+
+module.exports = { createRules, statusRules, customerRules };

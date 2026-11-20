@@ -19,7 +19,7 @@ const sales = async (query) => {
   const rows = await prisma.$queryRaw`
     SELECT date_trunc(${unit}, "createdAt") AS period, COUNT(*)::int AS orders, COALESCE(SUM(total), 0)::float AS sales
     FROM orders
-    WHERE "createdAt" >= ${from} AND "createdAt" < ${end} AND status NOT IN ('CANCELLED', 'REFUNDED')
+       WHERE "createdAt" >= ${from.toISOString()}::timestamp AND "createdAt" < ${end.toISOString()}::timestamp AND status NOT IN ('CANCELLED', 'REFUNDED')
     GROUP BY 1 ORDER BY 1`;
   const totalOrders = rows.reduce((sum, r) => sum + r.orders, 0);
   const totalSales = rows.reduce((sum, r) => sum + r.sales, 0);
@@ -34,7 +34,7 @@ const topProducts = async (query) => {
     SELECT oi."productName" AS name, SUM(oi.quantity)::int AS quantity, SUM(oi."lineTotal")::float AS revenue
     FROM order_items oi
     JOIN orders o ON o.id = oi."orderId"
-    WHERE o."createdAt" >= ${from} AND o."createdAt" < ${end} AND o.status NOT IN ('CANCELLED', 'REFUNDED')
+        WHERE o."createdAt" >= ${from.toISOString()}::timestamp AND o."createdAt" < ${end.toISOString()}::timestamp AND o.status NOT IN ('CANCELLED', 'REFUNDED')
     GROUP BY oi."productName" ORDER BY quantity DESC LIMIT ${limit}`;
   return { from, to: end, rows };
 };

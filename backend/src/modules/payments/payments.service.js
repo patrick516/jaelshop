@@ -1,5 +1,6 @@
 const { prisma } = require("../../config/database");
 const ApiError = require("../../utils/ApiError");
+const { round2, sumPaid } = require("../../utils/money");
 
 const STATUSES = ["PENDING", "PAID", "FAILED", "REFUNDED"];
 const METHODS = [
@@ -48,4 +49,42 @@ const update = async (id, body) => {
   });
 };
 
-module.exports = { list, update };
+// Record money received for an order, e.g. one installment of a loan.
+// The waiting (pending) payment always shows what is still owed
+const record = (orderId, body) =>
+  prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: { payments: true },
+    });
+    if (!order) throw new ApiError(404, "Order not found");
+    if (["CANCELLED", "REFUNDED"].includes(order.status))
+      throw new ApiError(400, `This order is ${order.status.toLowerCase()}`);
+
+    const amount = round2(Number(body.amount));
+    const balance = round2(Number(order.total) - sumPaid(order.payments));
+    if (amount > balance)
+      throw new ApiError(400, `The balance is only MK ${balance.toLocaleString("en-US")}`);
+
+    const payment = await tx.payment.create({
+      data: {
+        orderId,
+        method: body.method,
+        status: "PAID",
+        amount,
+        phoneNumber: body.phoneNumber,
+        transactionRef: body.transactionRef,
+        paidAt: new Date(),
+      },
+    });
+
+    const left = round2(balance - amount);
+    const waiting = order.payments.find((p) => p.status === "PENDING");
+    if (left <= 0)
+      await tx.payment.deleteMany({ where: { orderId, status: "PENDING" } });
+    else if (waiting)
+      await tx.payment.update({ where: { id: waiting.id }, data: { amount: left } });
+    return { ...payment, balance: left };
+  });
+
+module.exports = { list, update, record };

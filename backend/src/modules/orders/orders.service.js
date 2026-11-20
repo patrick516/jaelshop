@@ -1,5 +1,6 @@
 const { prisma } = require("../../config/database");
 const ApiError = require("../../utils/ApiError");
+const { findUsable, redeem } = require("../coupons/coupons.apply");
 
 const settingsService = require("../settings/settings.service");
 const {
@@ -55,7 +56,15 @@ const createOrder = async (body, user) => {
       };
     });
     const subtotal = lines.reduce((sum, l) => sum + l.lineTotal, 0);
-    const total = subtotal + deliveryFee;
+
+    // 2b. A discount code, if the buyer entered one. It takes money off the products only
+    let coupon = null;
+    let discount = 0;
+    if (body.couponCode) {
+      ({ coupon, discount } = await findUsable(tx, body.couponCode, subtotal));
+      await redeem(tx, coupon);
+    }
+    const total = subtotal - discount + deliveryFee;
 
     // 3. Reduce stock. The "gte" check means two buyers can never take the last item
     for (const line of lines) {
@@ -85,6 +94,8 @@ const createOrder = async (body, user) => {
         subtotal,
         deliveryFee,
         total,
+        discountTotal: discount,
+        couponId: coupon?.id ?? null,
         shippingName: body.shippingName,
         shippingPhone: body.shippingPhone,
         shippingDistrict: body.shippingDistrict,
@@ -204,6 +215,13 @@ const updateStatus = (id, status, userId) =>
           },
         });
       }
+      // A discount code used by this order can be used again
+      if (order.couponId) {
+        await tx.coupon.update({
+          where: { id: order.couponId },
+          data: { usedCount: { decrement: 1 } },
+        });
+      }
       // Unpaid payments of a cancelled order can no longer be paid
       await tx.payment.updateMany({
         where: { orderId: id, status: "PENDING" },
@@ -231,7 +249,16 @@ const customerLink = async (id) => {
   };
 };
 
+// Staff links an order to a customer (for loans), or removes the link with null
+const setCustomer = (id, customerId) =>
+  prisma.order.update({
+    where: { id },
+    data: { customerId: customerId || null },
+    select: { id: true, customerId: true },
+  });
+
 module.exports = {
+  setCustomer,
   createOrder,
   list,
   listMine,

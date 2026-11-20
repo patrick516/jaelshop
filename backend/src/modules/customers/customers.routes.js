@@ -2,6 +2,8 @@ const express = require("express");
 const controller = require("./customers.controller");
 const {
   profileRules,
+  staffCreateRules,
+  staffUpdateRules,
   addressCreateRules,
   addressUpdateRules,
   statusRules,
@@ -54,8 +56,12 @@ router.delete(
 );
 
 // Staff only
+// "summary" comes before "/:id", or it would be read as an id
+router.get("/summary", authorize(), controller.summary);
+router.post("/", authorize(), staffCreateRules, controller.create);
 router.get("/", authorize(), controller.list);
 router.get("/:id", authorize(), idParam, controller.getOne);
+router.put("/:id", authorize(), idParam, staffUpdateRules, controller.update);
 router.patch(
   "/:id/status",
   authorize(),

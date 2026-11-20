@@ -44,13 +44,28 @@ const createWhatsapp = async (req, res) => {
   );
 };
 
+// Guest order from the website checkout (no login). Saved as a WEBSITE order
+const createGuest = async (req, res) => {
+  const guest = { type: "guest", source: "WEBSITE" };
+  sendSuccess(res, await service.createOrder(req.body, guest), "Order placed", 201);
+};
+
 const customerLink = async (req, res) => {
   sendSuccess(res, await service.customerLink(req.params.id));
 };
 
+const setCustomer = async (req, res) =>
+  sendSuccess(
+    res,
+    await service.setCustomer(req.params.id, req.body.customerId),
+    "Customer updated",
+  );
+
 module.exports = {
+  setCustomer,
   create,
   createWhatsapp,
+  createGuest,
   list,
   listMine,
   getOne,

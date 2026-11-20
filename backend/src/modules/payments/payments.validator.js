@@ -10,4 +10,15 @@ const updateRules = [
   handleValidation,
 ];
 
-module.exports = { updateRules };
+// Staff records money received for an order (one installment of a loan)
+const recordRules = [
+  body("amount").isFloat({ gt: 0 }).withMessage("Amount must be more than 0"),
+  body("method")
+    .isIn(["AIRTEL_MONEY", "TNM_MPAMBA", "CASH_ON_DELIVERY", "BANK_TRANSFER"])
+    .withMessage("Invalid payment method"),
+  body("phoneNumber").optional({ nullable: true }).trim(),
+  body("transactionRef").optional({ nullable: true }).trim(),
+  handleValidation,
+];
+
+module.exports = { updateRules, recordRules };

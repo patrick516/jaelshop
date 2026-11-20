@@ -21,6 +21,10 @@ const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
 const staffRoutes = require("./modules/staff/staff.routes");
 const reportRoutes = require("./modules/reports/reports.routes");
 const { logActivity } = require("./utils/activityLog");
+const uploadRoutes = require("./modules/uploads/uploads.routes");
+const couponRoutes = require("./modules/coupons/coupons.routes");
+const productImageRoutes = require("./modules/products/productImages.routes");
+const { UPLOAD_DIR } = require("./middleware/upload");
 
 const app = express();
 
@@ -30,6 +34,17 @@ app.use(cors({ origin: env.corsOrigins, credentials: true }));
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Uploaded pictures. helmet blocks other sites from showing them by default,
+// so the shop (another address) would see broken images. This allows it
+app.use(
+  "/uploads",
+  (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(UPLOAD_DIR, { maxAge: "7d" }),
+);
 
 if (env.nodeEnv === "development") {
   app.use(morgan("dev"));
@@ -55,6 +70,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/brands", brandRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/products", productImageRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/settings", settingsRoutes);
@@ -63,6 +79,8 @@ app.use("/api/inventory", inventoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/coupons", couponRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

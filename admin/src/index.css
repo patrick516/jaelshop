@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%; /* page background #F8FAFC */
+    --foreground: 210 73% 15%; /* navy text */
+    --card: 0 0% 100%;
+    --card-foreground: 210 73% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 73% 15%;
+    --primary: 210 73% 15%; /* navy #0A2540 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 210 73% 15%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 94%; /* light grey for hover states. The orange is used directly as orange-500 */
+    --accent-foreground: 210 73% 15%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 25 95% 53%; /* orange focus ring */
+    --radius: 0.75rem;
+    /* Chart colours from the design: blue, orange, green, purple, navy */
+    --chart-1: 221 83% 53%;
+    --chart-2: 25 95% 53%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 210 73% 15%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

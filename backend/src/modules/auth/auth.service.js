@@ -56,7 +56,7 @@ const registerCustomer = async ({
 // Customer login (storefront)
 const loginCustomer = async (email, password) => {
   const customer = await prisma.customer.findUnique({ where: { email } });
-  if (!customer || !(await bcrypt.compare(password, customer.passwordHash))) {
+  if (!customer?.passwordHash || !(await bcrypt.compare(password, customer.passwordHash))) {
     throw new ApiError(401, "Invalid email or password");
   }
   if (customer.status !== "ACTIVE") {

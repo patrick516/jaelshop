@@ -14,4 +14,12 @@ const update = async (req, res) => {
   );
 };
 
-module.exports = { list, update };
+const record = async (req, res) =>
+  sendSuccess(
+    res,
+    await service.record(req.params.id, req.body),
+    "Payment recorded",
+    201,
+  );
+
+module.exports = { list, update, record };

@@ -1,4 +1,3 @@
-x``
 const sendSuccess = (
   res,
   data = null,

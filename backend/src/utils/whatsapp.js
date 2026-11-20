@@ -40,6 +40,7 @@ const orderMessage = (order, storeName) => {
     "",
     `Subtotal: ${mk(order.subtotal)}`,
     `Delivery: ${mk(order.deliveryFee)}`,
+    ...(Number(order.discountTotal) > 0 ? [`Discount: -${mk(order.discountTotal)}`] : []),
     `*Total: ${mk(order.total)}*`,
     "",
     `Name: ${order.shippingName}`,

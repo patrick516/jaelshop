@@ -1,14 +1,16 @@
 const service = require("./customers.service");
+const ledger = require("./customers.ledger");
+const manage = require("./customers.manage");
 const { sendSuccess, sendPaginated } = require("../../utils/ApiResponse");
 
 // req.user.id is the logged-in customer (set by authenticate)
 
 const list = async (req, res) => {
-  const { items, page, limit, total } = await service.list(req.query);
+  const { items, page, limit, total } = await ledger.list(req.query);
   sendPaginated(res, items, page, limit, total);
 };
 const getOne = async (req, res) =>
-  sendSuccess(res, await service.getById(req.params.id));
+  sendSuccess(res, await ledger.getById(req.params.id));
 const updateStatus = async (req, res) =>
   sendSuccess(
     res,
@@ -56,7 +58,16 @@ const removeWishlist = async (req, res) => {
   sendSuccess(res, null, "Removed from wishlist");
 };
 
+const create = async (req, res) =>
+  sendSuccess(res, await manage.create(req.body), "Customer added", 201);
+const update = async (req, res) =>
+  sendSuccess(res, await manage.update(req.params.id, req.body), "Customer updated");
+const summary = async (req, res) => sendSuccess(res, await ledger.summary());
+
 module.exports = {
+  create,
+  update,
+  summary,
   list,
   getOne,
   updateStatus,

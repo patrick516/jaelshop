@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/store/cart";
+import { AuthProvider } from "@/store/auth";
+import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import { getSettings } from "@/services/catalog";
@@ -23,12 +25,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <AuthProvider>
         <CartProvider>
           <Header whatsappNumber={whatsappNumber} />
           {/* pb-24 leaves room above the bottom navigation on phones */}
           <main className="mx-auto min-h-screen max-w-6xl px-4 pb-24 pt-4 md:pb-8">{children}</main>
           <BottomNav whatsappNumber={whatsappNumber} />
         </CartProvider>
+        </AuthProvider>
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
