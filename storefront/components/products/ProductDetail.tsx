@@ -50,8 +50,8 @@ export default function ProductDetail({
             : stock === 0
               ? "Out of stock"
               : stock <= 5
-                ? `Only ${stock} left`
-                : "In stock"}
+                ? `Only ${stock} left in stock`
+                : `${stock} in stock`}
         </p>
 
         <div className="flex items-center gap-4">

@@ -6,7 +6,11 @@ import type { Highlight } from "./types";
 const usable = PAGE.width - PAGE.margin * 2; // the width between the margins
 
 // The big numbers as small cards: up to 4 in a row, or 3 in a row when there are 5 or more
-export function drawHighlights(pdf: jsPDF, items: Highlight[], y: number): number {
+export function drawHighlights(
+  pdf: jsPDF,
+  items: Highlight[],
+  y: number,
+): number {
   if (items.length === 0) return y;
   const perRow = items.length > 4 ? 3 : items.length;
   const gap = 4;
@@ -27,7 +31,9 @@ export function drawHighlights(pdf: jsPDF, items: Highlight[], y: number): numbe
     pdf.text(item.label, x + 5, top + 7.5);
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(13);
-    pdf.setTextColor(...(item.tone === "good" ? GREEN : item.tone === "bad" ? RED : NAVY));
+    const [r, g, b] =
+      item.tone === "good" ? GREEN : item.tone === "bad" ? RED : NAVY;
+    pdf.setTextColor(r, g, b);
     pdf.text(item.value, x + 5, top + 16);
   });
   return y + Math.ceil(items.length / perRow) * (h + gap) + 4;

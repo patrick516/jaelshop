@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Settings } from "@/types";
 import { useCart } from "@/store/cart";
+import { useStockSync } from "@/hooks/useStockSync";
 import { whatsappLink } from "@/lib/whatsapp";
 import { buildCartMessage } from "@/lib/cartMessage";
 import EmptyState from "@/components/shared/EmptyState";
@@ -13,10 +14,9 @@ import CartTotals from "./CartTotals";
 export default function CartView({ settings }: { settings: Settings }) {
   const { items, subtotal, setQuantity, removeItem } = useCart();
 
-  // The cart is read from localStorage after the page opens. Until then show a placeholder,
-  // so the visitor never sees a false "cart is empty" flash
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
+  useStockSync(ready);
 
   if (!ready)
     return <div className="h-40 animate-pulse rounded-xl bg-secondary" />;

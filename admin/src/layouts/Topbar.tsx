@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import UserMenu from "./UserMenu";
 
-type Props = { pending: number; onMenu: () => void };
+type Props = { newOrders: number; onBell: () => void; onMenu: () => void };
 
 // The white bar at the top: menu button (phones), search, bell and the profile menu
-export default function Topbar({ pending, onMenu }: Props) {
+export default function Topbar({ newOrders, onBell, onMenu }: Props) {
   const navigate = useNavigate();
   const [term, setTerm] = useState("");
 
@@ -28,10 +28,11 @@ export default function Topbar({ pending, onMenu }: Props) {
         <Search size={18} className="absolute right-3 top-2.5 text-muted-foreground" />
       </form>
       <div className="ml-auto flex items-center gap-4">
-        <Link to="/orders" aria-label={`${pending} pending orders`} className="relative text-navy">
+        {/* The bell shows orders that arrived since you last looked. Clicking it opens Orders and clears it */}
+        <Link to="/orders" onClick={onBell} aria-label={newOrders > 0 ? `${newOrders} new orders` : "Orders"} className="relative text-navy">
           <Bell size={24} />
-          {pending > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white">{pending}</span>
+          {newOrders > 0 && (
+            <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white">{newOrders >= 20 ? "20+" : newOrders}</span>
           )}
         </Link>
         <UserMenu />

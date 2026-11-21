@@ -1,6 +1,7 @@
 "use client"; // uses the cart and a click handler
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Check, MessageCircle, ShoppingCart } from "lucide-react";
 import type { Product, Settings } from "@/types";
 import type { VariantSelection } from "@/hooks/useVariantSelection";
@@ -12,14 +13,17 @@ type Props = { product: Product; settings: Settings; sel: VariantSelection };
 
 // The two main buttons: Add to Cart and Order via WhatsApp
 export default function ProductActions({ product, settings, sel }: Props) {
-  const { addItem } = useCart();
+  const { items, addItem } = useCart();
   const [added, setAdded] = useState(false); // true for 1.5 seconds after Add to Cart
   const { selected, stock, qty, price, label } = sel;
   const image = (product.images.find((i) => i.isPrimary) ?? product.images[0])?.url ?? null;
+  const inCart = items.find((i) => i.variantId === selected?.id)?.quantity ?? 0;
+  const full = !!selected && stock > 0 && inCart >= stock; // everything that is available is already in the cart
 
   const addToCart = () => {
-    if (!selected || stock === 0) return;
-    addItem({ variantId: selected.id, productId: product.id, slug: product.slug, name: product.name, variantLabel: label || null, image, price }, qty);
+    if (!selected || stock === 0 || full) return;
+    const done = addItem({ variantId: selected.id, productId: product.id, slug: product.slug, name: product.name, variantLabel: label || null, image, price, stock }, qty);
+    if (done < qty) toast.warning(`Only ${stock} available${inCart ? `, and you already have ${inCart} in your cart` : ""}. We added ${done}.`);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -38,11 +42,11 @@ export default function ProductActions({ product, settings, sel }: Props) {
     <div className="space-y-2">
       <button
         onClick={addToCart}
-        disabled={!selected || stock === 0}
+        disabled={!selected || stock === 0 || full}
         className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-orange-500 py-3 font-bold text-white active:scale-95 disabled:bg-muted disabled:text-muted-foreground"
       >
         {added ? <Check size={18} /> : <ShoppingCart size={18} />}
-        {added ? "Added to cart" : "Add to Cart"}
+        {full ? "All available are in your cart" : added ? "Added to cart" : "Add to Cart"}
       </button>
       <a
         href={whatsappLink(settings.whatsappNumber, message)}

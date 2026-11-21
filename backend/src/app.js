@@ -24,6 +24,7 @@ const { logActivity } = require("./utils/activityLog");
 const uploadRoutes = require("./modules/uploads/uploads.routes");
 const couponRoutes = require("./modules/coupons/coupons.routes");
 const productImageRoutes = require("./modules/products/productImages.routes");
+const productStockRoutes = require("./modules/products/products.stock.routes");
 const { UPLOAD_DIR } = require("./middleware/upload");
 
 const app = express();
@@ -69,6 +70,7 @@ app.use("/api", logActivity);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/brands", brandRoutes);
 app.use("/api/suppliers", supplierRoutes);
+app.use("/api/products", productStockRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/products", productImageRoutes);
 app.use("/api/orders", orderRoutes);

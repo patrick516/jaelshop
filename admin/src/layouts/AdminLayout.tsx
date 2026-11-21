@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { useNewOrders } from "@/features/orders/useNewOrders";
 import { usePendingOrders } from "@/features/orders/usePendingOrders";
+import FloatingChat from "./FloatingChat";
 import SidebarContent from "./SidebarContent";
 import Topbar from "./Topbar";
-import FloatingChat from "./FloatingChat";
 
 // The frame around every admin page: sidebar, top bar and the page itself
 export default function AdminLayout() {
   const [open, setOpen] = useState(false); // the phone menu
-  const pending = usePendingOrders();
+  const pending = usePendingOrders(); // orders still waiting for action (the sidebar number)
+  const onOrders = useLocation().pathname.startsWith("/orders");
+  const { count: newOrders, markSeen } = useNewOrders(onOrders); // orders you have not looked at yet (the bell)
 
   return (
     <div className="min-h-screen">
@@ -27,7 +30,7 @@ export default function AdminLayout() {
       </Sheet>
 
       <div className="lg:pl-64">
-        <Topbar pending={pending} onMenu={() => setOpen(true)} />
+        <Topbar newOrders={newOrders} onBell={markSeen} onMenu={() => setOpen(true)} />
         <main className="p-4 md:p-6">
           <Outlet />
         </main>
