@@ -6,3 +6,7 @@ export const daysAgo = (n: number): string => iso(new Date(Date.now() - n * 24 *
 
 // Whole days between two YYYY-MM-DD dates
 export const daysBetween = (from: string, to: string): number => Math.round((new Date(to).getTime() - new Date(from).getTime()) / (24 * 60 * 60 * 1000));
+
+// The full date for a chart tooltip: "Sat, 17 Nov 2026" for a day, "November 2026" for a month
+export const tipDate = (iso: string, monthly: boolean): string =>
+  new Date(iso).toLocaleDateString("en-GB", monthly ? { month: "long", year: "numeric" } : { weekday: "short", day: "numeric", month: "short", year: "numeric" });
