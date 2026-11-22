@@ -2,7 +2,7 @@ const { prisma } = require("../../config/database");
 const ApiError = require("../../utils/ApiError");
 const slugify = require("../../utils/slugify");
 
-// What every product response carries: images, category, brand, and variants with their stock
+const { deletePicture } = require("../../utils/cloudinaryStorage");
 const productInclude = {
   images: { orderBy: { sortOrder: "asc" } },
   category: { select: { id: true, name: true, slug: true } },
@@ -154,8 +154,9 @@ const update = async (id, body) => {
 };
 
 const remove = async (id) => {
-  await getById(id);
-  await prisma.product.delete({ where: { id } });
+  const product = await getById(id);
+  await prisma.product.delete({ where: { id } }); // fails first if the product has orders, so its pictures are kept
+  await Promise.all(product.images.map((i) => deletePicture(i.url)));
 };
 
 module.exports = { list, getBySlug, getById, create, update, remove };

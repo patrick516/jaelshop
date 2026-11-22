@@ -1,32 +1,14 @@
-const crypto = require("crypto");
-const fs = require("fs");
-const path = require("path");
 const multer = require("multer");
 const ApiError = require("../utils/ApiError");
 
-// Pictures are saved in backend/uploads
-const UPLOAD_DIR = path.join(__dirname, "..", "..", "uploads");
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+const TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-// The file ending comes from the picture type, never from the name the visitor sent
-const TYPES = {
-  "image/jpeg": ".jpg",
-  "image/png": ".png",
-  "image/webp": ".webp",
-  "image/gif": ".gif",
-};
-
+// multer only reads the picture out of the upload form. It waits in memory and goes straight to Cloudinary,
+// so nothing is saved on this server
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: UPLOAD_DIR,
-    filename: (req, file, cb) =>
-      cb(null, `${Date.now()}-${crypto.randomBytes(6).toString("hex")}${TYPES[file.mimetype]}`),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024, files: 1 }, // 10 MB, one picture at a time
-  fileFilter: (req, file, cb) =>
-    TYPES[file.mimetype]
-      ? cb(null, true)
-      : cb(new ApiError(400, "Only JPG, PNG, WebP or GIF pictures are allowed")),
+  fileFilter: (req, file, cb) => (TYPES.includes(file.mimetype) ? cb(null, true) : cb(new ApiError(400, "Only JPG, PNG, WebP or GIF pictures are allowed"))),
 });
 
 // Accepts one picture in the form field "file". Upload problems become clear 400 messages
@@ -40,4 +22,4 @@ const single = (req, res, next) =>
     next(err);
   });
 
-module.exports = { single, UPLOAD_DIR };
+module.exports = { single };

@@ -1,20 +1,6 @@
-const fs = require("fs/promises");
-const path = require("path");
 const { prisma } = require("../../config/database");
 const ApiError = require("../../utils/ApiError");
-const { UPLOAD_DIR } = require("../../middleware/upload");
-
-const OWN_FILE = /^\d+-[0-9a-f]{12}\.(jpg|png|webp|gif)$/; // the names our upload creates
-
-// Deletes the file from disk when the picture was uploaded here. Links to other sites are left alone
-const deleteFile = async (url) => {
-  try {
-    const name = path.basename(new URL(url).pathname);
-    if (OWN_FILE.test(name)) await fs.unlink(path.join(UPLOAD_DIR, name));
-  } catch {
-    // the file is already gone, or the link is not a valid address
-  }
-};
+const { deletePicture } = require("../../utils/cloudinaryStorage");
 
 // The first picture of a product becomes its main picture
 const addImage = async (productId, body) => {
@@ -38,7 +24,7 @@ const ownImage = async (productId, imageId) => {
   return image;
 };
 
-// Removing the main picture makes the next one the main picture
+// Removing the main picture makes the next one the main picture. The file is deleted from Cloudinary too
 const removeImage = async (productId, imageId) => {
   const image = await ownImage(productId, imageId);
   await prisma.productImage.delete({ where: { id: imageId } });
@@ -46,7 +32,7 @@ const removeImage = async (productId, imageId) => {
     const next = await prisma.productImage.findFirst({ where: { productId }, orderBy: { sortOrder: "asc" } });
     if (next) await prisma.productImage.update({ where: { id: next.id }, data: { isPrimary: true } });
   }
-  await deleteFile(image.url);
+  await deletePicture(image.url);
 };
 
 const setPrimary = async (productId, imageId) => {

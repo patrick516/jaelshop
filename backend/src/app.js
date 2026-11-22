@@ -25,7 +25,6 @@ const uploadRoutes = require("./modules/uploads/uploads.routes");
 const couponRoutes = require("./modules/coupons/coupons.routes");
 const productImageRoutes = require("./modules/products/productImages.routes");
 const productStockRoutes = require("./modules/products/products.stock.routes");
-const { UPLOAD_DIR } = require("./middleware/upload");
 
 const app = express();
 
@@ -35,17 +34,6 @@ app.use(cors({ origin: env.corsOrigins, credentials: true }));
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
-
-// Uploaded pictures. helmet blocks other sites from showing them by default,
-// so the shop (another address) would see broken images. This allows it
-app.use(
-  "/uploads",
-  (req, res, next) => {
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    next();
-  },
-  express.static(UPLOAD_DIR, { maxAge: "7d" }),
-);
 
 if (env.nodeEnv === "development") {
   app.use(morgan("dev"));
