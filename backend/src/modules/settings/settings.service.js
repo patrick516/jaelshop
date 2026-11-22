@@ -7,6 +7,7 @@ const DEFAULTS = {
   whatsappNumber: "",
   airtelMoneyNumber: "",
   tnmMpambaNumber: "",
+  pendingAlertHours: "24",
 };
 
 // Merge saved values over the defaults and return one plain object

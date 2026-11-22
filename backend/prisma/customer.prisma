@@ -2,7 +2,7 @@ model Customer {
   id           String     @id @default(uuid())
   firstName    String
   lastName     String
-  email        String?     @unique
+  email        String?    @unique
   phone        String?
   passwordHash String?
   status       UserStatus @default(ACTIVE)

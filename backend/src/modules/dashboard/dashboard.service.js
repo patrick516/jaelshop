@@ -1,9 +1,8 @@
 const { prisma } = require("../../config/database");
+const settingsService = require("../settings/settings.service");
 
-const DAY = 24 * 60 * 60 * 1000; // one day in milliseconds
-const countable = { notIn: ["CANCELLED", "REFUNDED"] }; // these orders do not count as sales
-
-// % change from previous to current, one decimal. From zero, any growth shows as 100
+const DAY = 24 * 60 * 60 * 1000;
+const countable = { notIn: ["CANCELLED", "REFUNDED"] };
 const percentChange = (current, previous) => {
   if (previous === 0) return current > 0 ? 100 : 0;
   return Math.round(((current - previous) / previous) * 1000) / 10;
@@ -20,10 +19,24 @@ const orderTotals = (from, to) =>
 const summary = async (query) => {
   const days = Number(query.days) || 30;
   const now = new Date();
-  const from = new Date(now.getTime() - days * DAY); // start of the chosen period
-  const prevFrom = new Date(from.getTime() - days * DAY); // start of the period before it
-  const unit = days > 90 ? "month" : "day"; // the 1Y chart groups by month
+  const from = new Date(now.getTime() - days * DAY);
+  const prevFrom = new Date(from.getTime() - days * DAY);
+  const unit = days > 90 ? "month" : "day";
   const created = (a, b) => ({ createdAt: { gte: a, lt: b } });
+
+  const settings = await settingsService.getAll();
+  const staleHours = Number(settings.pendingAlertHours) || 24;
+  const staleBefore = new Date(now.getTime() - staleHours * 60 * 60 * 1000);
+  const staleWhere = { status: "PENDING", createdAt: { lt: staleBefore } };
+  const [stale, staleCount] = await Promise.all([
+    prisma.order.findMany({
+      where: staleWhere,
+      orderBy: { createdAt: "asc" },
+      take: 20,
+      include: { _count: { select: { items: true } } },
+    }),
+    prisma.order.count({ where: staleWhere }),
+  ]);
 
   // Run every query at the same time
   const [
@@ -115,6 +128,21 @@ const summary = async (query) => {
       createdAt: o.createdAt,
     })),
     pendingOrders: pending,
+    staleHours,
+    staleCount,
+    stalePending: stale.map((o) => ({
+      id: o.id,
+      orderNumber: o.orderNumber,
+      customer: o.shippingName,
+      phone: o.shippingPhone,
+      items: o._count.items,
+      total: o.total,
+      source: o.source,
+      createdAt: o.createdAt,
+      hoursPending: Math.floor(
+        (now.getTime() - o.createdAt.getTime()) / 3600000,
+      ), // whole hours waiting
+    })),
     lowStockCount: lowStock[0].count,
   };
 };

@@ -1,4 +1,5 @@
 const service = require("./orders.service");
+const { sell } = require("./orders.sell");
 const { sendSuccess, sendPaginated } = require("../../utils/ApiResponse");
 
 // req.user is set by the authenticate middleware (id and type: staff or customer)
@@ -47,7 +48,17 @@ const createWhatsapp = async (req, res) => {
 // Guest order from the website checkout (no login). Saved as a WEBSITE order
 const createGuest = async (req, res) => {
   const guest = { type: "guest", source: "WEBSITE" };
-  sendSuccess(res, await service.createOrder(req.body, guest), "Order placed", 201);
+  sendSuccess(
+    res,
+    await service.createOrder(req.body, guest),
+    "Order placed",
+    201,
+  );
+};
+
+// Staff marks an order as sold at the price agreed on WhatsApp
+const sellOrder = async (req, res) => {
+  sendSuccess(res, await sell(req.params.id, req.body), "Order marked as sold");
 };
 
 const customerLink = async (req, res) => {
@@ -65,6 +76,7 @@ module.exports = {
   setCustomer,
   create,
   createWhatsapp,
+  sellOrder,
   createGuest,
   list,
   listMine,

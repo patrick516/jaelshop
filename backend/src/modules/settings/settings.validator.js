@@ -15,6 +15,10 @@ const updateRules = [
       "Enter a valid phone number, e.g. 0999123456 or +265999123456",
     ),
   body("airtelMoneyNumber").optional().trim(),
+  body("pendingAlertHours")
+    .optional()
+    .isFloat({ gt: 0 })
+    .withMessage("Hours must be more than 0"),
   body("tnmMpambaNumber").optional().trim(),
   handleValidation,
 ];

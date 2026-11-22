@@ -59,4 +59,23 @@ const customerRules = [
   handleValidation,
 ];
 
-module.exports = { createRules, statusRules, customerRules };
+// Rules for marking an order as sold. Everything is optional, an empty body sells it at its current total, fully paid
+const sellRules = [
+  body("agreedTotal")
+    .optional()
+    .isFloat({ gt: 0 })
+    .withMessage("Agreed total must be more than 0"),
+  body("amountPaid")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Amount paid cannot be negative"),
+  body("method")
+    .optional()
+    .isIn(["AIRTEL_MONEY", "TNM_MPAMBA", "CASH_ON_DELIVERY", "BANK_TRANSFER"])
+    .withMessage("Invalid payment method"),
+  body("phoneNumber").optional({ nullable: true }).trim(),
+  body("transactionRef").optional({ nullable: true }).trim(),
+  handleValidation,
+];
+
+module.exports = { createRules, statusRules, customerRules, sellRules };
