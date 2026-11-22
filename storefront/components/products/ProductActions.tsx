@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, ShoppingCart } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa"; // Official WhatsApp Icon
+import { Check, ShoppingCart, ArrowRight } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import type { Product, Settings } from "@/types";
 import type { VariantSelection } from "@/hooks/useVariantSelection";
 import { useCart } from "@/store/cart";
@@ -20,6 +20,9 @@ export default function ProductActions({ product, sel }: Props) {
     (product.images.find((i) => i.isPrimary) ?? product.images[0])?.url ?? null;
   const inCart = items.find((i) => i.variantId === selected?.id)?.quantity ?? 0;
   const full = !!selected && stock > 0 && inCart >= stock; // everything that is available is already in the cart
+
+  // ✅ FIX: Calculate the total quantity of ALL items in the cart
+  const totalCartQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const addToCart = () => {
     if (!selected || stock === 0 || full) return;
@@ -53,26 +56,44 @@ export default function ProductActions({ product, sel }: Props) {
   };
 
   return (
-    <div className="space-y-2">
-      <button
-        onClick={addToCart}
-        disabled={!selected || stock === 0 || full}
-        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-orange-500 py-3 font-bold text-white active:scale-95 disabled:bg-muted disabled:text-muted-foreground"
-      >
-        {added ? <Check size={18} /> : <ShoppingCart size={18} />}
-        {full
-          ? "All available are in your cart"
-          : added
-            ? "Added to cart"
-            : "Add to Cart"}
-      </button>
-      <button
-        onClick={orderViaWhatsApp}
-        disabled={!selected || stock === 0}
-        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95 disabled:bg-muted disabled:text-muted-foreground"
-      >
-        <FaWhatsapp size={20} /> Order via WhatsApp
-      </button>
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <button
+          onClick={addToCart}
+          disabled={!selected || stock === 0 || full}
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-orange-500 py-3 font-bold text-white active:scale-95 disabled:bg-muted disabled:text-muted-foreground"
+        >
+          {added ? <Check size={18} /> : <ShoppingCart size={18} />}
+          {full
+            ? "All available are in your cart"
+            : added
+              ? "Added to cart"
+              : "Add to Cart"}
+        </button>
+        <button
+          onClick={orderViaWhatsApp}
+          disabled={!selected || stock === 0}
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95 disabled:bg-muted disabled:text-muted-foreground"
+        >
+          <FaWhatsapp size={20} /> Order via WhatsApp
+        </button>
+      </div>
+
+      {/* DYNAMIC PROCEED BUTTON */}
+      {totalCartQuantity > 0 && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-300 pt-1">
+          <button
+            onClick={() => router.push("/cart")}
+            className="flex min-h-11 w-full items-center justify-between rounded-full border-2 border-navy bg-navy px-5 py-2 font-bold text-white transition-colors hover:bg-navy/90 active:scale-[0.98]"
+          >
+            <span className="flex items-center gap-2">
+              <ShoppingCart size={18} />
+              View Cart ({totalCartQuantity})
+            </span>
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

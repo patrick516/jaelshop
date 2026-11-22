@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { FaWhatsapp } from "react-icons/fa";
+import { ArrowRight } from "lucide-react"; // Added for a nice arrow icon
 import { formatMK } from "@/lib/format";
+
 type Props = { subtotal: number };
 
 export default function CartTotals({ subtotal }: Props) {
@@ -19,17 +20,13 @@ export default function CartTotals({ subtotal }: Props) {
         <span>Total</span>
         <span className="text-orange-500">{formatMK(subtotal)}</span>
       </div>
+
+      {/* SINGLE PROCEED BUTTON */}
       <Link
         href="/checkout"
-        className="flex min-h-11 w-full items-center justify-center rounded-full bg-orange-500 py-3 font-bold text-white active:scale-95"
+        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-orange-500 py-3 font-bold text-white active:scale-95 hover:bg-orange-600 transition-colors"
       >
-        Proceed to Checkout
-      </Link>
-      <Link
-        href="/checkout"
-        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95"
-      >
-        <FaWhatsapp size={20} /> Order via WhatsApp
+        Proceed to Checkout <ArrowRight size={18} />
       </Link>
     </div>
   );
