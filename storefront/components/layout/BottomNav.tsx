@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, MessageCircle, ShoppingCart, User } from "lucide-react";
+import { Home, LayoutGrid, ShoppingCart, User } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa"; // Official WhatsApp Icon
 import { useCart } from "@/store/cart";
 import { whatsappLink } from "@/lib/whatsapp";
 
@@ -14,7 +15,11 @@ const tabs = [
   { href: "/account", label: "Account", icon: User },
 ];
 
-export default function BottomNav({ whatsappNumber }: { whatsappNumber: string }) {
+export default function BottomNav({
+  whatsappNumber,
+}: {
+  whatsappNumber: string;
+}) {
   const pathname = usePathname(); // the page we are on, e.g. "/cart"
   const { count } = useCart();
 
@@ -24,10 +29,14 @@ export default function BottomNav({ whatsappNumber }: { whatsappNumber: string }
       <ul className="mx-auto flex max-w-md items-center justify-around py-2">
         {tabs.map(({ href, label, icon: Icon }) => {
           // "/" must match exactly, other tabs also match their sub-pages (/shop/...)
-          const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+          const active =
+            href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
             <li key={href}>
-              <Link href={href} className={`relative flex flex-col items-center gap-0.5 text-[11px] font-medium ${active ? "text-orange-500" : "text-navy"}`}>
+              <Link
+                href={href}
+                className={`relative flex flex-col items-center gap-0.5 text-[11px] font-medium ${active ? "text-orange-500" : "text-navy"}`}
+              >
                 <Icon size={22} />
                 {label}
                 {label === "Cart" && count > 0 && (
@@ -41,8 +50,14 @@ export default function BottomNav({ whatsappNumber }: { whatsappNumber: string }
         })}
         {whatsappNumber && (
           <li>
-            <a href={whatsappLink(whatsappNumber)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-0.5 text-[11px] font-medium text-green-600">
-              <MessageCircle size={22} />
+            <a
+              href={whatsappLink(whatsappNumber)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-0.5 text-[11px] font-medium text-green-600"
+            >
+              <FaWhatsapp size={24} />{" "}
+              {/* Changed from <MessageCircle size={22} /> */}
               WhatsApp
             </a>
           </li>

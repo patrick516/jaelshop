@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MessageCircle } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { formatMK } from "@/lib/format";
 type Props = { subtotal: number };
 
@@ -29,7 +29,7 @@ export default function CartTotals({ subtotal }: Props) {
         href="/checkout"
         className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95"
       >
-        <MessageCircle size={18} /> Order via WhatsApp
+        <FaWhatsapp size={20} /> Order via WhatsApp
       </Link>
     </div>
   );

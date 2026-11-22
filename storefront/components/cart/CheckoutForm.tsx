@@ -1,7 +1,7 @@
 "use client"; // the cart and the form live in the browser
 
 import { useEffect, useState } from "react";
-import { MessageCircle } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa"; // Official WhatsApp Icon
 import { useCart } from "@/store/cart";
 import { useCheckout } from "@/hooks/useCheckout";
 import { useCoupon } from "@/hooks/useCoupon";
@@ -64,7 +64,7 @@ export default function CheckoutForm() {
           disabled={busy}
           className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95 disabled:opacity-60"
         >
-          <MessageCircle size={18} />{" "}
+          <FaWhatsapp size={20} />{" "}
           {busy ? "Saving order..." : "Continue to WhatsApp"}
         </button>
       </OrderSummary>

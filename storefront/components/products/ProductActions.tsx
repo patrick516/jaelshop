@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, MessageCircle, ShoppingCart } from "lucide-react";
+import { Check, ShoppingCart } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa"; // Official WhatsApp Icon
 import type { Product, Settings } from "@/types";
 import type { VariantSelection } from "@/hooks/useVariantSelection";
 import { useCart } from "@/store/cart";
@@ -70,7 +71,7 @@ export default function ProductActions({ product, sel }: Props) {
         disabled={!selected || stock === 0}
         className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95 disabled:bg-muted disabled:text-muted-foreground"
       >
-        <MessageCircle size={18} /> Order via WhatsApp
+        <FaWhatsapp size={20} /> Order via WhatsApp
       </button>
     </div>
   );
