@@ -11,6 +11,7 @@ import KpiCards from "./KpiCards";
 import QuickActions from "./QuickActions";
 import RangeTabs from "./RangeTabs";
 import RecentOrders from "./RecentOrders";
+import StalePending from "./StalePending";
 import SalesChart from "./SalesChart";
 import TopCategories from "./TopCategories";
 import type { DashboardData } from "./types";
@@ -19,7 +20,9 @@ import type { DashboardData } from "./types";
 export default function DashboardPage() {
   const { user } = useAuth();
   const [days, setDays] = useState(30);
-  const { data, error } = useFetch<DashboardData>(`/dashboard?days=${days}`);
+  const { data, error, reload } = useFetch<DashboardData>(
+    `/dashboard?days=${days}`,
+  );
   const profit = useFetch<ProfitData>(
     `/reports/profit?from=${daysAgo(days)}&to=${today()}`,
   );
@@ -51,6 +54,7 @@ export default function DashboardPage() {
               Tap to see them.
             </Link>
           )}
+          <StalePending data={data} onChanged={reload} />
           <KpiCards data={data} profit={profit.data?.totals ?? null} />
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">

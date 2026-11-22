@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import type { Settings } from "@/types";
 import { useCart } from "@/store/cart";
 import { useStockSync } from "@/hooks/useStockSync";
-import { whatsappLink } from "@/lib/whatsapp";
-import { buildCartMessage } from "@/lib/cartMessage";
 import EmptyState from "@/components/shared/EmptyState";
 import CartItemRow from "./CartItemRow";
 import CartTotals from "./CartTotals";
@@ -29,8 +27,6 @@ export default function CartView({ settings }: { settings: Settings }) {
       />
     );
 
-  const message = buildCartMessage(items, settings.storeName, subtotal);
-
   return (
     <div className="space-y-5 md:grid md:grid-cols-[1fr_340px] md:gap-8 md:space-y-0">
       <div>
@@ -46,10 +42,7 @@ export default function CartView({ settings }: { settings: Settings }) {
           ))}
         </div>
       </div>
-      <CartTotals
-        subtotal={subtotal}
-        whatsappHref={whatsappLink(settings.whatsappNumber, message)}
-      />
+      <CartTotals subtotal={subtotal} />
     </div>
   );
 }

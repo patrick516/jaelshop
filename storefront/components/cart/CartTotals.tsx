@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { formatMK } from "@/lib/format";
-type Props = { subtotal: number; whatsappHref: string };
+type Props = { subtotal: number };
 
-// Totals with the Checkout and WhatsApp buttons
-export default function CartTotals({ subtotal, whatsappHref }: Props) {
+export default function CartTotals({ subtotal }: Props) {
   return (
     <div className="h-fit space-y-3 rounded-xl border bg-white p-4">
       <h2 className="font-extrabold text-navy">Order Summary</h2>
@@ -26,14 +25,12 @@ export default function CartTotals({ subtotal, whatsappHref }: Props) {
       >
         Proceed to Checkout
       </Link>
-      <a
-        href={whatsappHref}
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link
+        href="/checkout"
         className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 font-bold text-white active:scale-95"
       >
         <MessageCircle size={18} /> Order via WhatsApp
-      </a>
+      </Link>
     </div>
   );
 }

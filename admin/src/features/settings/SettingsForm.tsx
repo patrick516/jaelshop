@@ -21,6 +21,7 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
       whatsappNumber: v.whatsappNumber.trim(),
       airtelMoneyNumber: v.airtelMoneyNumber.trim(),
       tnmMpambaNumber: v.tnmMpambaNumber.trim(),
+      pendingAlertHours: v.pendingAlertHours.trim(),
     };
     await run(() => api.put("/settings", body), "Settings saved");
   };
@@ -69,6 +70,22 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
             />
           </Field>
         </div>
+      </FormCard>
+      <FormCard title="Pending order alert">
+        <Field
+          label="Warn me after (hours)"
+          htmlFor="s-stale"
+          hint="A WhatsApp order that is still pending after this many hours shows in the dashboard alert. e.g. 24."
+        >
+          <Input
+            id="s-stale"
+            type="number"
+            min="1"
+            step="1"
+            value={v.pendingAlertHours}
+            onChange={set("pendingAlertHours")}
+          />
+        </Field>
       </FormCard>
       {error && (
         <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-destructive">

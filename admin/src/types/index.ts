@@ -28,4 +28,5 @@ export type Settings = {
   whatsappNumber: string;
   airtelMoneyNumber: string;
   tnmMpambaNumber: string;
+  pendingAlertHours: string;
 };
