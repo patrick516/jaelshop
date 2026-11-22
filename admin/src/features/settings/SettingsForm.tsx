@@ -7,15 +7,50 @@ import { useSubmit } from "@/hooks/useSubmit";
 import { api } from "@/lib/api";
 import type { Settings } from "@/types";
 import { Pencil, Save, X } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
-// The shop settings form. Only an Administrator can save it
+// Helper to fix any bad data coming from the database
+const cleanPhone = (val: string | undefined | null) => {
+  if (!val) return "";
+  let digits = val.replace(/\D/g, ""); // Keep only digits
+  if (digits.startsWith("265")) digits = digits.substring(3); // Remove first 265
+  if (digits.startsWith("0")) digits = digits.substring(1); // Remove leading 0
+  digits = digits.slice(0, 9); // Keep max 9 digits
+  return `+265${digits}`;
+};
+
 export default function SettingsForm({ initial }: { initial: Settings }) {
-  const [v, setV] = useState<Settings>(initial);
+  // SANITIZE THE INITIAL DATA ON LOAD
+  const [v, setV] = useState<Settings>({
+    ...initial,
+    whatsappNumber: cleanPhone(initial.whatsappNumber),
+    airtelMoneyNumber: cleanPhone(initial.airtelMoneyNumber),
+    tnmMpambaNumber: cleanPhone(initial.tnmMpambaNumber),
+  });
+
   const { busy, error, run } = useSubmit();
   const [isEditing, setIsEditing] = useState(false);
 
   const set = (key: keyof Settings) => (e: ChangeEvent<HTMLInputElement>) =>
     setV({ ...v, [key]: e.target.value });
+
+  // THE STRICT PHONE HANDLER (Same as before)
+  const setPhone =
+    (key: keyof Settings) => (e: ChangeEvent<HTMLInputElement>) => {
+      let rawValue = e.target.value;
+
+      if (!rawValue || rawValue === "+") {
+        setV({ ...v, [key]: "" });
+        return;
+      }
+
+      let digits = rawValue.replace(/\D/g, "");
+      if (digits.startsWith("265")) digits = digits.substring(3);
+      if (digits.startsWith("0")) digits = digits.substring(1);
+      digits = digits.slice(0, 9);
+
+      setV({ ...v, [key]: `+265${digits}` });
+    };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,16 +62,21 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
       pendingAlertHours: v.pendingAlertHours.trim(),
     };
 
-    // Run the API call, and on success, lock the form again
     await run(async () => {
       await api.put("/settings", body);
-      setIsEditing(false); // This locks the form and switches to table view
+      setIsEditing(false);
       return { success: true };
     }, "Settings saved");
   };
 
   const handleCancel = () => {
-    setV(initial); // Reset to original data
+    // Reset to the sanitized initial data
+    setV({
+      ...initial,
+      whatsappNumber: cleanPhone(initial.whatsappNumber),
+      airtelMoneyNumber: cleanPhone(initial.airtelMoneyNumber),
+      tnmMpambaNumber: cleanPhone(initial.tnmMpambaNumber),
+    });
     setIsEditing(false);
   };
 
@@ -79,7 +119,8 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
               <td className="px-6 py-4 font-medium text-slate-900">
                 WhatsApp Number
               </td>
-              <td className="px-6 py-4 text-slate-600">
+              <td className="px-6 py-4 text-slate-600 flex items-center gap-2">
+                <FaWhatsapp className="text-green-500 text-lg" />
                 {v.whatsappNumber || "—"}
               </td>
               <td className="px-6 py-4 text-right"></td>
@@ -118,7 +159,7 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
   }
 
   // ==========================================
-  // EDIT MODE (Your Original Form)
+  // EDIT MODE (Form)
   // ==========================================
   return (
     <form
@@ -137,14 +178,20 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
         <Field
           label="WhatsApp number"
           htmlFor="s-wa"
-          hint="Orders and the website chat buttons go to this number. e.g. 0999123456 or +265999123456."
+          hint="Orders and the website chat buttons go to this number. Start typing with +265."
         >
-          <Input
-            id="s-wa"
-            type="tel"
-            value={v.whatsappNumber}
-            onChange={set("whatsappNumber")}
-          />
+          <div className="relative">
+            <FaWhatsapp className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 text-lg" />
+            <Input
+              id="s-wa"
+              type="tel"
+              placeholder="+265995049331"
+              className="pl-10"
+              value={v.whatsappNumber}
+              onChange={setPhone("whatsappNumber")}
+              maxLength={13}
+            />
+          </div>
         </Field>
       </FormCard>
 
@@ -154,16 +201,20 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
             <Input
               id="s-airtel"
               type="tel"
+              placeholder="+265995049331"
               value={v.airtelMoneyNumber}
-              onChange={set("airtelMoneyNumber")}
+              onChange={setPhone("airtelMoneyNumber")}
+              maxLength={13}
             />
           </Field>
           <Field label="TNM Mpamba" htmlFor="s-tnm">
             <Input
               id="s-tnm"
               type="tel"
+              placeholder="+265995049331"
               value={v.tnmMpambaNumber}
-              onChange={set("tnmMpambaNumber")}
+              onChange={setPhone("tnmMpambaNumber")}
+              maxLength={13}
             />
           </Field>
         </div>
@@ -192,7 +243,6 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
         </p>
       )}
 
-      {/* Save & Cancel Buttons */}
       <div className="flex items-center gap-3 pt-2">
         <Button
           disabled={busy}
