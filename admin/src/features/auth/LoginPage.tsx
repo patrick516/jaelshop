@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "./useAuth";
+import { useSetupStatus } from "./useSetupStatus";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
@@ -13,9 +14,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const setup = useSetupStatus();
   const [showPassword, setShowPassword] = useState(false);
 
-  if (user) return <Navigate to="/" replace />; // already logged in
+  if (user) return <Navigate to="/" replace />;
+
+  if (setup.loading) return <div className="min-h-screen bg-[#F8FAFC]" />;
+  if (setup.needsSetup) return <Navigate to="/setup" replace />;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -96,27 +101,6 @@ export default function LoginPage() {
           </div>
 
           {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="remember"
-                className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
-              />
-              <label
-                htmlFor="remember"
-                className="text-sm text-slate-500 cursor-pointer"
-              >
-                Remember me
-              </label>
-            </div>
-            <a
-              href="#"
-              className="text-sm font-medium text-blue-800 hover:text-blue-700"
-            >
-              Forgot password?
-            </a>
-          </div>
 
           {/* Error Message */}
           {error && (
@@ -133,14 +117,9 @@ export default function LoginPage() {
             {busy ? "Signing in..." : "Sign in"}
           </Button>
         </form>
-
-        {/* Footer inside the card */}
-        <div className="text-center text-sm text-slate-500 pt-2">
-          Don't have an account?{" "}
-          <a href="#" className="font-medium text-blue-800 hover:text-blue-700">
-            Create one
-          </a>
-        </div>
+        <p className="pt-2 text-center text-sm text-slate-500">
+          Need access? Ask an administrator to add you from Staff Users.
+        </p>
       </div>
 
       {/* 3. Optional Page Footer (Outside the card) */}

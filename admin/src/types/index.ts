@@ -12,13 +12,13 @@ export type ApiResponse<T> = {
   pagination?: Pagination;
 };
 
-// The logged-in staff member, as returned by /auth/staff/login
 export type StaffUser = {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
   role: string;
+  avatarUrl?: string | null;
 };
 export type Session = { token: string; user: StaffUser };
 

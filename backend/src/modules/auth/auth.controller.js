@@ -1,5 +1,6 @@
 const authService = require("./auth.service");
 const { sendSuccess } = require("../../utils/ApiResponse");
+const setupService = require("./auth.setup");
 
 const staffLogin = async (req, res) => {
   const data = await authService.loginStaff(req.body.email, req.body.password);
@@ -23,4 +24,24 @@ const me = async (req, res) => {
   sendSuccess(res, req.user);
 };
 
-module.exports = { staffLogin, customerRegister, customerLogin, me };
+// Does the system still have no staff at all? The admin panel asks this before showing the login
+const setupStatus = async (req, res) =>
+  sendSuccess(res, { needsSetup: await setupService.needsSetup() });
+
+// Creates the first administrator, once
+const setup = async (req, res) =>
+  sendSuccess(
+    res,
+    await setupService.createFirstAdmin(req.body, req.file),
+    "Administrator account created",
+    201,
+  );
+
+module.exports = {
+  staffLogin,
+  customerRegister,
+  customerLogin,
+  me,
+  setupStatus,
+  setup,
+};

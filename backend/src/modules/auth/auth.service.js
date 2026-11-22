@@ -29,6 +29,7 @@ const loginStaff = async (email, password) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      avatarUrl: user.avatarUrl,
       role: user.role.name,
     },
   };
@@ -56,7 +57,10 @@ const registerCustomer = async ({
 // Customer login (storefront)
 const loginCustomer = async (email, password) => {
   const customer = await prisma.customer.findUnique({ where: { email } });
-  if (!customer?.passwordHash || !(await bcrypt.compare(password, customer.passwordHash))) {
+  if (
+    !customer?.passwordHash ||
+    !(await bcrypt.compare(password, customer.passwordHash))
+  ) {
     throw new ApiError(401, "Invalid email or password");
   }
   if (customer.status !== "ACTIVE") {

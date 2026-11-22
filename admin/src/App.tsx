@@ -3,6 +3,7 @@ import ProtectedRoute from "@/components/shared/ProtectedRoute";
 import ActivityPage from "@/features/activity/ActivityPage";
 import AuthProvider from "@/features/auth/AuthProvider";
 import LoginPage from "@/features/auth/LoginPage";
+import SetupPage from "@/features/auth/SetupPage";
 import BrandsPage from "@/features/brands/BrandsPage";
 import CategoriesPage from "@/features/categories/CategoriesPage";
 import CustomersPage from "@/features/customers/CustomersPage";
@@ -23,6 +24,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/setup" element={<SetupPage />} />
           {/* Everything inside needs a login and gets the sidebar and top bar */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
