@@ -2,7 +2,7 @@ const { prisma } = require("../../config/database");
 const settingsService = require("../settings/settings.service");
 
 const DAY = 24 * 60 * 60 * 1000;
-const countable = { notIn: ["CANCELLED", "REFUNDED"] };
+const countable = { notIn: ["PENDING", "CANCELLED", "REFUNDED"] };
 const percentChange = (current, previous) => {
   if (previous === 0) return current > 0 ? 100 : 0;
   return Math.round(((current - previous) / previous) * 1000) / 10;
@@ -69,7 +69,7 @@ const summary = async (query) => {
     prisma.$queryRaw`
         SELECT date_trunc(${unit}, "createdAt") AS day, COUNT(*)::int AS orders, COALESCE(SUM(total), 0)::float AS sales
         FROM orders
-               WHERE "createdAt" >= ${from.toISOString()}::timestamp AND status NOT IN ('CANCELLED', 'REFUNDED')
+               WHERE "createdAt" >= ${from.toISOString()}::timestamp AND status NOT IN ('PENDING', 'CANCELLED', 'REFUNDED')
         GROUP BY 1 ORDER BY 1`,
     // Sales per category: order lines -> variant -> product -> category
     prisma.$queryRaw`
@@ -79,7 +79,7 @@ const summary = async (query) => {
         JOIN product_variants v ON v.id = oi."variantId"
         JOIN products p ON p.id = v."productId"
         JOIN categories c ON c.id = p."categoryId"
-             WHERE o."createdAt" >= ${from.toISOString()}::timestamp AND o.status NOT IN ('CANCELLED', 'REFUNDED')
+             WHERE o."createdAt" >= ${from.toISOString()}::timestamp AND o.status NOT IN ('PENDING', 'CANCELLED', 'REFUNDED')
         GROUP BY c.name ORDER BY sales DESC LIMIT 5`,
     prisma.order.findMany({
       take: 5,

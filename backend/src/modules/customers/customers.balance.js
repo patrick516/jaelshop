@@ -12,7 +12,7 @@ const totalsByCustomer = async () => {
     LEFT JOIN (
       SELECT "orderId", SUM(amount) AS paid FROM payments WHERE status = 'PAID' GROUP BY "orderId"
     ) pd ON pd."orderId" = o.id
-    WHERE o."customerId" IS NOT NULL AND o.status NOT IN ('CANCELLED', 'REFUNDED')
+    WHERE o."customerId" IS NOT NULL AND o.status NOT IN ('PENDING', 'CANCELLED', 'REFUNDED')
     GROUP BY o."customerId"`;
 
   return new Map(

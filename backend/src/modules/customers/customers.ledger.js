@@ -71,7 +71,7 @@ const getById = async (id) => {
 
   const rows = orders.map((o) => {
     const paid = sumPaid(o.payments);
-    const open = !["CANCELLED", "REFUNDED"].includes(o.status); // closed orders owe nothing
+    const open = !["PENDING", "CANCELLED", "REFUNDED"].includes(o.status); // closed orders owe nothing
     return {
       id: o.id,
       orderNumber: o.orderNumber,

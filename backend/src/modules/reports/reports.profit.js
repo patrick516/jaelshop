@@ -51,11 +51,11 @@ const report = async (query) => {
         JOIN orders o ON o.id = oi."orderId"
         WHERE o."createdAt" >= ${from.toISOString()}::timestamp
           AND o."createdAt" < ${end.toISOString()}::timestamp
-          AND o.status NOT IN ('CANCELLED', 'REFUNDED')
+          AND o.status NOT IN ('PENDING', 'CANCELLED', 'REFUNDED')
       ) t
       GROUP BY 1, 2 ORDER BY 1`,
     prisma.order.aggregate({
-      where: { createdAt: { gte: from, lt: end }, status: { notIn: ["CANCELLED", "REFUNDED"] } },
+      where: { createdAt: { gte: from, lt: end }, status: { notIn: ["PENDING", "CANCELLED", "REFUNDED"] } },
       _sum: { discountTotal: true },
     }),
   ]);
