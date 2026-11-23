@@ -28,6 +28,9 @@ const productStockRoutes = require("./modules/products/products.stock.routes");
 
 const app = express();
 
+// ✅ FIX: Tell Express to trust Render's proxy (1 hop)
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
 app.use(cors({ origin: env.corsOrigins, credentials: true }));
