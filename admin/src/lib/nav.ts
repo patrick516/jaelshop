@@ -1,20 +1,53 @@
-import { Award, BarChart3, CreditCard, Home, Megaphone, Package, ScrollText, Settings, ShoppingCart, Tags, UserCog, Users, Warehouse, type LucideIcon } from "lucide-react";
+import { BarChart3, Home, Package, Settings, ShoppingCart, Users, type LucideIcon } from "lucide-react";
 
-export type NavItem = { to: string; label: string; Icon: LucideIcon };
+export type Tab = { to: string; label: string; adminOnly?: boolean }; // adminOnly tabs are hidden from other staff
+export type NavItem = { to: string; label: string; Icon: LucideIcon; tabs?: Tab[] };
 
-// The sidebar menu, in the order of the design
+// The sidebar. Each item with tabs owns several pages, which show as tabs above the page
 export const NAV: NavItem[] = [
   { to: "/", label: "Dashboard", Icon: Home },
-  { to: "/products", label: "Products", Icon: Package },
-  { to: "/categories", label: "Categories", Icon: Tags },
-  { to: "/brands", label: "Brands", Icon: Award },
-  { to: "/orders", label: "Orders", Icon: ShoppingCart },
+  {
+    to: "/products",
+    label: "Products",
+    Icon: Package,
+    tabs: [
+      { to: "/products", label: "Products" },
+      { to: "/inventory", label: "Stock" },
+      { to: "/categories", label: "Categories" },
+      { to: "/brands", label: "Brands" },
+    ],
+  },
+  {
+    to: "/orders",
+    label: "Orders",
+    Icon: ShoppingCart,
+    tabs: [
+      { to: "/orders", label: "Orders" },
+      { to: "/payments", label: "Payments" },
+    ],
+  },
   { to: "/customers", label: "Customers", Icon: Users },
-  { to: "/inventory", label: "Inventory", Icon: Warehouse },
-  { to: "/payments", label: "Payments", Icon: CreditCard },
   { to: "/reports", label: "Reports", Icon: BarChart3 },
-  { to: "/marketing", label: "Marketing", Icon: Megaphone },
-  { to: "/settings", label: "Settings", Icon: Settings },
-  { to: "/staff", label: "Staff Users", Icon: UserCog },
-  { to: "/activity-logs", label: "Activity Logs", Icon: ScrollText },
+  {
+    to: "/settings",
+    label: "Settings",
+    Icon: Settings,
+    tabs: [
+      { to: "/settings", label: "Shop" },
+      { to: "/marketing", label: "Discount codes" },
+      { to: "/staff", label: "Staff", adminOnly: true },
+      { to: "/activity-logs", label: "Activity", adminOnly: true },
+    ],
+  },
 ];
+
+// The sidebar item that owns an address, e.g. "/payments" belongs to Orders
+export const groupOf = (pathname: string): NavItem | undefined =>
+  NAV.find((item) =>
+    item.to === "/"
+      ? pathname === "/" // "/" would otherwise match every page
+      : [item.to, ...(item.tabs?.map((t) => t.to) ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`)),
+  );
+
+// True when the page being shown belongs to this sidebar item (it turns orange)
+export const inGroup = (to: string, pathname: string): boolean => groupOf(pathname)?.to === to;

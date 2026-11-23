@@ -5,6 +5,7 @@ import { useNewOrders } from "@/features/orders/useNewOrders";
 import { usePendingOrders } from "@/features/orders/usePendingOrders";
 import FloatingChat from "./FloatingChat";
 import SidebarContent from "./SidebarContent";
+import SectionTabs from "./SectionTabs";
 import Topbar from "./Topbar";
 
 // The frame around every admin page: sidebar, top bar and the page itself
@@ -23,15 +24,24 @@ export default function AdminLayout() {
 
       {/* Phone: the same sidebar slides in from the left */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" aria-describedby={undefined} className="w-64 border-0 bg-navy p-0 text-white [&>button]:text-white">
+        <SheetContent
+          side="left"
+          aria-describedby={undefined}
+          className="w-64 border-0 bg-navy p-0 text-white [&>button]:text-white"
+        >
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SidebarContent pending={pending} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
 
       <div className="lg:pl-64">
-        <Topbar newOrders={newOrders} onBell={markSeen} onMenu={() => setOpen(true)} />
+        <Topbar
+          newOrders={newOrders}
+          onBell={markSeen}
+          onMenu={() => setOpen(true)}
+        />
         <main className="p-4 md:p-6">
+          <SectionTabs />
           <Outlet />
         </main>
       </div>

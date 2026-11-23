@@ -1,23 +1,23 @@
-import { NavLink } from "react-router-dom";
-import { NAV } from "@/lib/nav";
+import { NavLink, useLocation } from "react-router-dom";
+import { NAV, inGroup } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 type Props = { pending: number; onNavigate?: () => void };
 
-// The menu links. The active one turns orange, Orders shows the pending count
 export default function SidebarNav({ pending, onNavigate }: Props) {
+  const { pathname } = useLocation(); // the page being shown
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto px-3">
       {NAV.map(({ to, label, Icon }) => (
         <NavLink
           key={to}
           to={to === "/orders" && pending > 0 ? "/orders?status=PENDING" : to}
-          end={to === "/"} // "/" would otherwise stay active on every page
+          end={to === "/"}
           onClick={onNavigate}
-          className={({ isActive }) =>
+          className={() =>
             cn(
               "flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition-colors",
-              isActive
+              inGroup(to, pathname)
                 ? "bg-orange-500 text-white"
                 : "text-white/80 hover:bg-white/10",
             )
